@@ -1,0 +1,40 @@
+#!/usr/bin/env tclsh
+package require tcltest 2.2
+eval ::tcltest::configure $argv
+
+lappend auto_path [file join [file dirname [info script]] ..]
+package require jsonparser
+package require jsonscanner
+
+namespace eval ::json::parsertest {
+	namespace import ::tcltest::*
+	variable parser
+	variable scanner
+	variable SETUP {
+		set scanner [::json::jsonscanner #auto]
+		set parser [::json::jsonparser #auto -scanner [namespace which -command $scanner]]
+	}
+	variable CLEANUP {
+		itcl::delete object $scanner
+		itcl::delete object $parser
+	}
+	
+	test object-1 {} -setup $SETUP -body {
+		$scanner start "{\"test\":23}"
+		$parser parse
+	} -cleanup $CLEANUP -result {object {test {number 23}}}
+
+	test object-2 {} -setup $SETUP -body {
+		$scanner start "{\"test\":23, \"foo\": {\"obj2\": \[42, \"bla\"\]}}"
+		$parser parse
+	} -cleanup $CLEANUP -result {object {test {number 23} foo {object {obj2 {array {number 42}}}}}}
+
+	test object-2 {} -setup $SETUP -body {
+		$scanner start "{}"
+		$parser parse
+	} -cleanup $CLEANUP -result {object {}}
+
+	cleanupTests
+}
+
+namespace delete ::json::parsertest

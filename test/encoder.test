@@ -1,0 +1,45 @@
+#!/usr/bin/env tclsh
+package require tcltest 2.2
+eval ::tcltest::configure $argv
+
+lappend auto_path [file join [file dirname [info script]] ..]
+package require jsonencoder
+
+namespace eval ::json::encodertest {
+	namespace import ::tcltest::*
+	variable parser
+	variable scanner
+	variable SETUP {
+	}
+	variable CLEANUP {
+	}
+	
+	test string-1 {} -setup $SETUP -body {
+		::json::encode {string "bla"}
+	} -cleanup $CLEANUP -result {"bla"}
+
+	test bool-1 {} -setup $SETUP -body {
+		::json::encode {bool true}
+	} -cleanup $CLEANUP -result {true}
+
+	test number-1 {} -setup $SETUP -body {
+		::json::encode {number 23.5e-2}
+	} -cleanup $CLEANUP -result {23.5e-2}
+
+	test array-1 {} -setup $SETUP -body {
+		::json::encode {array {{string bla} {number 23}}}
+	} -cleanup $CLEANUP -result {["bla",23]}
+
+	test object-1 {} -setup $SETUP -body {
+		::json::encode {object {}}
+	} -cleanup $CLEANUP -result {{}}
+
+	test object-2 {} -setup $SETUP -body {
+		::json::encode {object {a {number 23}}}
+	} -cleanup $CLEANUP -result {{"a":23}}
+
+
+	cleanupTests
+}
+
+namespace delete ::json::encodertest

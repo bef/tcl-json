@@ -1,0 +1,90 @@
+#!/usr/bin/env tclsh
+package require tcltest 2.2
+eval ::tcltest::configure $argv
+
+lappend auto_path [file join [file dirname [info script]] ..]
+package require jsonscanner
+
+namespace eval ::json::scannertest {
+	namespace import ::tcltest::*
+	#testConstraint X [expr {...}]
+	variable scanner
+	variable SETUP {
+		set scanner [::json::jsonscanner #auto]
+	}
+	variable CLEANUP {
+		itcl::delete object $scanner
+	}
+	
+	test number-1 {} -setup $SETUP -body {
+		$scanner start "23"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER 23}}
+
+	test number-2 {} -setup $SETUP -body {
+		$scanner start "-23"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER -23}}
+	
+	test number-3 {} -setup $SETUP -body {
+		$scanner start "23.5"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER 23.5}}
+	
+	test number-4 {} -setup $SETUP -body {
+		$scanner start "23E2"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER 23E2}}
+	
+	test number-5 {} -setup $SETUP -body {
+		$scanner start "23e-2"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER 23e-2}}
+	
+	test number-6 {} -setup $SETUP -body {
+		$scanner start "-23.42e-5"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER -23.42e-5}}
+	
+	test number-7 {} -setup $SETUP -body {
+		$scanner start "00"
+		$scanner run
+	} -cleanup $CLEANUP -result {{NUMBER 0} {NUMBER 0}}
+
+
+	test string-1 {} -setup $SETUP -body {
+		$scanner start {""}
+		$scanner run
+	} -cleanup $CLEANUP -result {{STRING {}}}
+
+	test string-2 {} -setup $SETUP -body {
+		$scanner start {"test"}
+		$scanner run
+	} -cleanup $CLEANUP -result {{STRING test}}
+	
+	test string-3 {} -setup $SETUP -body {
+		$scanner start {"\\ \" \n"}
+		$scanner run
+	} -cleanup $CLEANUP -result {{STRING {\\ \" \n}}}
+
+	test string-3 {} -setup $SETUP -body {
+		$scanner start {"null"}
+		$scanner run
+	} -cleanup $CLEANUP -result {{STRING null}}
+
+
+	test bool-1 {} -setup $SETUP -body {
+		$scanner start {true false null}
+		$scanner run
+	} -cleanup $CLEANUP -result {{BOOL true} {BOOL false} {BOOL null}}
+	
+	
+	test symbols-1 {} -setup $SETUP -body {
+		$scanner start {{}[],:}
+		$scanner run
+	} -cleanup $CLEANUP -result {STARTBRACE ENDBRACE STARTBRACKET ENDBRACKET COMMA COLON}
+	
+	cleanupTests
+}
+
+namespace delete ::json::scannertest
