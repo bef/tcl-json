@@ -1,10 +1,13 @@
+About
+This package provides a typed version of a scanner, parser and encoder for the popular JSON format for TCL. Scanner and parser make use of the yeti scanner and parser generator tools.
+	
 License
-	GPLv2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+GPLv2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Author
-	Ben Fuhrmannek <bef@pentaphase.de>
+Ben Fuhrmannek <bef@pentaphase.de>
 
 URLs
-	- http://json.org/
-	- http://www.fpx.de/fp/Software/Yeti/
+- http://json.org/
+- http://www.fpx.de/fp/Software/Yeti/
 
