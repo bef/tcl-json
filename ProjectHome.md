@@ -1,0 +1,1 @@
+This package provides a typed version of a scanner, parser and encoder for the popular JSON format for TCL. Scanner and parser make use of the yeti scanner and parser generator tools.
